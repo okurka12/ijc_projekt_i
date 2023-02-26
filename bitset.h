@@ -10,20 +10,24 @@
 **  2023-02-24  **
 *****************/
 
-#include <stdio.h>
 #include <limits.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "error.h"
 
 
 typedef unsigned long bitset_index_t;
 typedef unsigned long * bitset_t;
 
-/* určí, kolik je potřeba unsigned longů na n bitů */
+/* určí, kolik je potřeba unsigned longů na n bitů 
+   (včetně prvního unsigned longu pro velikost) */
 #define bity(n) n / sizeof(unsigned long) + 2
 
 
 #ifndef USE_INLINE
+
 
 /* definuje a nuluje proměnnou jmeno_pole */
 #define bitset_create(jmeno, velikost) \
@@ -49,17 +53,38 @@ typedef unsigned long * bitset_t;
 #define bitset_free(jmeno) free(jmeno)
 
 
-/* vrátí deklarovanou velikost pole v bitech (uloženou v poli) */
+/* vrátí deklarovanou velikost pole v bitech */
 #define bitset_size(jmeno) jmeno[0]
 
 
 /* nastaví zadaný bit v poli na hodnotu zadanou výrazem
    (nulový výraz == bit 0, nenulový výraz == bit 1) */
-#define bitset_setbit(jmeno, index, vyraz) 
+#define bitset_setbit(jmeno, index, vyraz) \
+    if (index > jmeno[0] - 1) { \
+        error_exit("bitset_setbit: Index %lu mimo rozsah 0..%lu\n", \
+                   (unsigned long)index, jmeno[0]); \
+    } \
+\
+    if (vyraz) { \
+        /*   [index v poli UL]     (maska << (index v konkrétním UL       ))*/ \
+        jmeno[bity(index) - 1] |=  (1UL   << (index % sizeof(unsigned long))); \
+    } \
+    else { \
+        jmeno[bity(index) - 1] &= ~(1UL   << (index % sizeof(unsigned long))); \
+    }
 
-// tady uz si nejsem jisty jak to udelat tak ja to do priste vymyslim a budu ted
-// pokracovat rozhranim error.h protoze s jeho pomoci mame kontrolovat meze
-// tady v tom xd vis co
+
+// BITSET_GETBIT NENI DODELANE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#define bitset_getbit(jmeno, index) \
+    if (index > jmeno[0] - 1) { \
+        error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n", \
+                   (unsigned long)index, jmeno[0]) \
+    } \
+    /** muj problem tady je ze toto je makro na nejaky vyraz ktery vrati  \
+     * hodnotu nejakeho bitu ale jak mam uprostred tohodle vyrazu         \
+     * udelat ten bound check aby                                         \
+     * to byl stale platny vyraz 🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔 */
+
 
 // TODO: use inline !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #endif
