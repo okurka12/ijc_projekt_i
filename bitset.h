@@ -7,23 +7,28 @@
 **  2023-02-24  **
 **              **
 ** Last edited: **
-**  2023-02-26  **
+**  2023-03-01  **
 *****************/
 
+#include <assert.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 
 #include "error.h"
 
 
 typedef unsigned long bitset_index_t;
-typedef unsigned long * bitset_t;
+typedef unsigned long bitset_t;
 
 /* určí, kolik je potřeba unsigned longů na n bitů 
    (včetně prvního unsigned longu pro velikost) */
 #define bity(n) n / sizeof(unsigned long) + 2
+
+/* Velikost unsigned longu v bitech */
+#define SULB sizeof(unsigned long) * 8
 
 
 #ifndef USE_INLINE
@@ -33,7 +38,9 @@ typedef unsigned long * bitset_t;
 #define bitset_create(jmeno, velikost) \
     bitset_t jmeno[bity(velikost)] = {0}; \
     jmeno[0] = velikost; \
-    static_assert(velikost > 0 && bity(velikost) <= ULONG_MAX)
+    static_assert(velikost > 0 && bity(velikost) <= ULONG_MAX, \
+                  "bitset_create: Nesprávná velikost pole " \
+                  "(parametr `velikost` je počet bitů.");
 
 
 /* definuje proměnnou jmeno_pole tak, aby byla kompatibilní s polem
@@ -41,8 +48,7 @@ typedef unsigned long * bitset_t;
 #define bitset_alloc(jmeno, velikost) \
     jmeno = malloc(bity(velikost) * sizeof(unsigned long)); \
     if (jmeno == NULL) { \
-        fprintf(stderr, "bitset_alloc: Chyba alokace paměti\n"); \
-        exit(1); \
+        error_exit("bitset_alloc: Chyba alokace paměti\n"); \
     } \
     memset(jmeno, 0, sizeof(unsigned long) * bity(velikost)); \
     jmeno[0] = velikost; \
@@ -66,11 +72,11 @@ typedef unsigned long * bitset_t;
     } \
 \
     if (vyraz) { \
-        /*   [index v poli UL]     (maska << (index v konkrétním UL       ))*/ \
-        jmeno[bity(index) - 1] |=  (1UL   << (index % sizeof(unsigned long))); \
+        /*   [index v poli UL] |=  (maska <<  (index v konkrétním UL)) */ \
+        jmeno[bity(index) - 1] |=  (1UL   <<  (index % SULB)); \
     } \
     else { \
-        jmeno[bity(index) - 1] &= ~(1UL   << (index % sizeof(unsigned long))); \
+        jmeno[bity(index) - 1] &= ~(1UL   <<  (index % SULB)); \
     }
 
 
