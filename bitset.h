@@ -7,8 +7,13 @@
 **  2023-02-24  **
 **              **
 ** Last edited: **
-**  2023-03-01  **
+**  2023-03-02  **
 *****************/
+
+/**
+ * řádky s komentářem `xxx` jsou problematické z hlediska přetypování
+ * (různé konstanty které by zabránily předefinování UL na jiný typ)
+*/
 
 #include <assert.h>
 #include <limits.h>
@@ -23,9 +28,9 @@
 typedef unsigned long bitset_index_t;
 typedef unsigned long bitset_t;
 
-/* určí, kolik je potřeba unsigned longů na n bitů 
-   (včetně prvního unsigned longu pro velikost) */
-#define bity(n) n / sizeof(unsigned long) + 2
+/* určí, v kolikátém UL je n-tý bit (vstup i výstup počítán od nuly) */
+#define bity(n) n / (sizeof(unsigned long) * 8)
+
 
 /* Velikost unsigned longu v bitech */
 #define SULB sizeof(unsigned long) * 8
@@ -36,23 +41,23 @@ typedef unsigned long bitset_t;
 
 /* definuje a nuluje proměnnou jmeno_pole */
 #define bitset_create(jmeno, velikost) \
-    bitset_t jmeno[bity(velikost)] = {0}; \
-    jmeno[0] = velikost; \
-    static_assert(velikost > 0 && bity(velikost) <= ULONG_MAX, \
+    static_assert(velikost > 0 && velikost <= ULONG_MAX, /* xxx */ \
                   "bitset_create: Nesprávná velikost pole " \
-                  "(parametr `velikost` je počet bitů.");
+                  "(parametr `velikost` je počet bitů."); \
+    bitset_t jmeno[bity(velikost) + 2] = {0}; \
+    jmeno[0] = velikost;
 
 
 /* definuje proměnnou jmeno_pole tak, aby byla kompatibilní s polem
    vytvořeným pomocí bitset_create, ale pole je alokováno dynamicky */
 #define bitset_alloc(jmeno, velikost) \
-    jmeno = malloc(bity(velikost) * sizeof(unsigned long)); \
+    assert(velikost > 0 && velikost <= ULONG_MAX); /* xxx */ \
+    jmeno = malloc((bity(velikost) + 2) * sizeof(unsigned long)); \
     if (jmeno == NULL) { \
         error_exit("bitset_alloc: Chyba alokace paměti\n"); \
     } \
-    memset(jmeno, 0, sizeof(unsigned long) * bity(velikost)); \
-    jmeno[0] = velikost; \
-    assert(velikost > 0 && bity(velikost) <= ULONG_MAX)
+    memset(jmeno, 0, sizeof(unsigned long) * (bity(velikost) + 2)); \
+    jmeno[0] = velikost
 
 
 /* uvolní paměť dynamicky (bitset_alloc) alokovaného pole */
@@ -73,23 +78,43 @@ typedef unsigned long bitset_t;
 \
     if (vyraz) { \
         /*   [index v poli UL] |=  (maska <<  (index v konkrétním UL)) */ \
-        jmeno[bity(index) - 1] |=  (1UL   <<  (index % SULB)); \
+        jmeno[bity(index) + 1] |=  (1UL   <<  (index % SULB)); \
     } \
     else { \
-        jmeno[bity(index) - 1] &= ~(1UL   <<  (index % SULB)); \
+        jmeno[bity(index) + 1] &= ~(1UL   <<  (index % SULB)); \
     }
 
 
-// BITSET_GETBIT NENI DODELANE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// takto by to asi melo byt hotove ale radeji zkontrolovat ja uz na to nemam ted
 #define bitset_getbit(jmeno, index) \
-    if (index > jmeno[0] - 1) { \
-        error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n", \
-                   (unsigned long)index, jmeno[0]) \
-    } \
-    /** muj problem tady je ze toto je makro na nejaky vyraz ktery vrati  \
-     * hodnotu nejakeho bitu ale jak mam uprostred tohodle vyrazu         \
-     * udelat ten bound check aby                                         \
-     * to byl stale platny vyraz 🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔 */
+    (index > jmeno[0] - 1) ? \
+        (error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n", (unsigned long)index, jmeno[0]), 0) \
+    : \
+        (((jmeno[bity(index) + 1]) >> (index % SULB)) & 1UL) 
+    /** jo a priste jeste zkratit ty radky lol 
+     * 
+     * tak jo v tomhle commitu jsem opravil makro bity() 
+     * a s nim souvisejici indexovani
+     * 
+     * taky jsem zjistil jak mam udelat to nad cim jsem dumal minule
+     * trvalo mi to hodinu mlaceni hlavou do zdi a pak jsem na to stejne
+     * neprisel sam ale poradilo mi chatgpt 
+     * 
+     * to bylo legracni protoze ja si trhal vlasy jak mam udelat makro co neco
+     * vraci a zaroven kontroluje splneni podminek a pri jejich nesplneni zavola 
+     * void funkci protoze ternary operator si stezoval ze jeden
+     * argument je void a druhy je cislo tak ja uz jsem tady uplne silel
+     * a reseni?? OPERATOR CARKA :))))))))))))))) to je tak stupidni vec tpc
+     * 
+     * JESTE ZKONTROLOVAT CO JSEM TADY UDELAL tedka uz nema cenu abych to po
+     * stopadesate prochazel je na to potreba fresh pohled na vec a to ten
+     * muj urcite neni protoze uz to delam 1 h 40 min a uz mi jebe pico
+     * chci jit streamovat na tiktok ne tady resit tyhle mrdky
+     * 
+     * jo a jeste vysetrit jestli radky kde se v te masce pouziva 1UL
+     * jsou problemove a mel bych je oznacit komentarem xxx nebo ne
+     * */
+
 
 
 // TODO: use inline !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
