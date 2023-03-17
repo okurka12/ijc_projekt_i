@@ -9,6 +9,8 @@
 ** Last edited: **
 **  2023-03-17  **
 *****************/
+// Fakulta: FIT VUT
+// Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
 
 #ifndef _ERROR_H
 #define _ERROR_H

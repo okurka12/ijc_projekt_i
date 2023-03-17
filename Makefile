@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c11 -Wall -Wextra -pedantic -g
+CFLAGS=-m32 -O0 -std=c11 -Wall -Wextra -pedantic -g
 
 all: sll_main
 
