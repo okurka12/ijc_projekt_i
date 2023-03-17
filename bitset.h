@@ -26,8 +26,9 @@
 
 #ifndef _BITSET_H
 
-typedef unsigned long bitset_index_t;
-typedef unsigned long bitset_t;
+typedef unsigned long bset_ele;  // bitset element - unsigned long
+typedef bset_ele bitset_index_t;
+typedef bset_ele *bitset_t;
 
 /* určí, v kolikátém UL je n-tý bit (vstup i výstup počítán od nuly) */
 #define bity(n) n / (sizeof(unsigned long) * 8)
@@ -42,7 +43,7 @@ typedef unsigned long bitset_t;
     static_assert(velikost > 0 && velikost <= ULONG_MAX, /* xxx */ \
                   "bitset_create: Nespravna velikost pole " \
                   "(parametr `velikost` je pocet bitu."); \
-    bitset_t jmeno[bity(velikost) + 2] = {0}; \
+    bset_ele jmeno[bity(velikost) + 2] = {0}; \
     jmeno[0] = velikost;
 
 #ifndef USE_INLINE
@@ -51,7 +52,7 @@ typedef unsigned long bitset_t;
    vytvořeným pomocí bitset_create, ale pole je alokováno dynamicky */
 #define bitset_alloc(jmeno, velikost) \
     assert(velikost > 0 && velikost <= ULONG_MAX); /* xxx */ \
-    bitset_t *jmeno = malloc((bity(velikost) + 2) * sizeof(bitset_t)); \
+    bset_ele *jmeno = malloc((bity(velikost) + 2) * sizeof(bset_ele)); \
     if (jmeno == NULL) { \
         error_exit("bitset_alloc: Chyba alokace paměti\n"); \
     } \
@@ -72,7 +73,7 @@ typedef unsigned long bitset_t;
 #define bitset_setbit(jmeno, index, vyraz) \
     if (index > jmeno[0] - 1) { \
         error_exit("bitset_setbit: Index %lu mimo rozsah 0..%lu\n", \
-                   (bitset_t)index, jmeno[0]); \
+                   (bset_ele)index, jmeno[0]); \
     } \
 \
     if (vyraz) { \
@@ -88,7 +89,7 @@ typedef unsigned long bitset_t;
     (index > jmeno[0] - 1) ? \
         ( \
             error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n", \
-                       (bitset_t)index, jmeno[0]),  /* operator carka */ \
+                       (bset_ele)index, jmeno[0]),  /* operator carka */ \
             0 \
         ) \
     : \
@@ -106,13 +107,13 @@ typedef unsigned long bitset_t;
 
 /* definuje proměnnou jmeno_pole tak, aby byla kompatibilní s polem
    vytvořeným pomocí bitset_create, ale pole je alokováno dynamicky */
-#define bitset_alloc(jmeno, velikost) bitset_t *jmeno = _bitset_alloc(velikost)
+#define bitset_alloc(jmeno, velikost) bitset_t jmeno = _bitset_alloc(velikost)
 
 
-static inline bitset_t* _bitset_alloc(bitset_t velikost) {
+static inline bset_ele* _bitset_alloc(bset_ele velikost) {
     assert(velikost > 0 && velikost <= ULONG_MAX);
-    bitset_t *output;
-    if ((output = malloc((bity(velikost) + 2) * sizeof(bitset_t))) == NULL) {
+    bset_ele *output;
+    if ((output = malloc((bity(velikost) + 2) * sizeof(bset_ele))) == NULL) {
         error_exit("bitset_alloc: Chyba alokace paměti.\n");
     }
     return output;
@@ -120,20 +121,20 @@ static inline bitset_t* _bitset_alloc(bitset_t velikost) {
 
 
 /* uvolní paměť dynamicky (bitset_alloc) alokovaného pole */
-static inline void bitset_free(bitset_t *jmeno) {
+static inline void bitset_free(bset_ele *jmeno) {
     free(jmeno);
 }
 
 
 /* vrátí deklarovanou velikost pole v bitech */
-static inline bitset_t bitset_size(bitset_t jmeno[]) {
+static inline bset_ele bitset_size(bitset_t jmeno) {
     return jmeno[0];
 }
 
 
 /* nastaví zadaný bit v poli na hodnotu zadanou výrazem
    (nulový výraz == bit 0, nenulový výraz == bit 1) */
-static inline void bitset_setbit(bitset_t jmeno[], bitset_t index, int vyraz) {
+static inline void bitset_setbit(bitset_t jmeno, bset_ele index, int vyraz) {
     if (index > jmeno[0] - 1) {
         error_exit("bitset_setbit: Index %lu mimo rozsah 0..%lu\n",
                    (unsigned long)index, jmeno[0]);
@@ -149,7 +150,7 @@ static inline void bitset_setbit(bitset_t jmeno[], bitset_t index, int vyraz) {
 
 
 /* získá hodnotu zadaného bitu, vrací hodnotu 0 nebo 1 */
-static inline bitset_t bitset_getbit(bitset_t jmeno[], bitset_t index) {
+static inline bset_ele bitset_getbit(bitset_t jmeno, bset_ele index) {
     if (index > jmeno[0] - 1) {
         error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n",
                    index, jmeno[0]);
