@@ -112,7 +112,7 @@ typedef unsigned long bitset_t;
 static inline bitset_t* _bitset_alloc(bitset_t velikost) {
     assert(velikost > 0 && velikost <= ULONG_MAX);
     bitset_t *output;
-    if ((output = malloc(bity(velikost) + 2)) == NULL) {
+    if ((output = malloc((bity(velikost) + 2) * sizeof(bitset_t))) == NULL) {
         error_exit("bitset_alloc: Chyba alokace paměti.\n");
     }
     return output;
@@ -153,7 +153,6 @@ static inline bitset_t bitset_getbit(bitset_t jmeno[], bitset_t index) {
     if (index > jmeno[0] - 1) {
         error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n",
                    index, jmeno[0]);
-
     }
     return ((jmeno[bity(index) + 1]) >> (index % SULB)) & 1UL;
 }
