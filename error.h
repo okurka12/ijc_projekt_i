@@ -7,18 +7,21 @@
 **  2023-02-26  **
 **              **
 ** Last edited: **
-**  2023-03-01  **
+**  2023-03-17  **
 *****************/
 
 #ifndef _ERROR_H
 #define _ERROR_H
+
+
 /* Tiskne warning do stderr, voláno stejně jako printf() */
 void warning(const char *fmt, ...);
 
 
 /* Tiskne error do stderr a ukončí program, voláno stejně jako printf() */
 void error_exit(const char *fmt, ...);
-#endif
+
+#endif  // ndef _ERROR_H
 
 
 
@@ -33,4 +36,4 @@ void error_exit(const char *fmt, ...) {
 
 }
 
-#endif
+#endif  
