@@ -27,6 +27,7 @@
 #include "error.h"
 
 #ifndef _BITSET_H
+#define _BITSET_H
 
 typedef unsigned long bset_ele;  // bitset element - unsigned long
 typedef bset_ele bitset_index_t;
