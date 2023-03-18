@@ -73,9 +73,9 @@ typedef bset_ele *bitset_t;
 /* nastaví zadaný bit v poli na hodnotu zadanou výrazem
    (nulový výraz == bit 0, nenulový výraz == bit 1) */
 #define bitset_setbit(jmeno, index, vyraz) \
-    if (index > jmeno[0] - 1) { \
+    if (index >= jmeno[0]) { \
         error_exit("bitset_setbit: Index %lu mimo rozsah 0..%lu\n", \
-                   (bset_ele)index, jmeno[0]); \
+                   (bset_ele)index, jmeno[0] - 1); \
     } \
 \
     if (vyraz) { \
@@ -133,9 +133,9 @@ static inline bset_ele bitset_size(bitset_t jmeno) {
 /* nastaví zadaný bit v poli na hodnotu zadanou výrazem
    (nulový výraz == bit 0, nenulový výraz == bit 1) */
 static inline void bitset_setbit(bitset_t jmeno, bset_ele index, int vyraz) {
-    if (index > jmeno[0] - 1) {
+    if (index >= jmeno[0]) {
         error_exit("bitset_setbit: Index %lu mimo rozsah 0..%lu\n",
-                   (unsigned long)index, jmeno[0]);
+                   (unsigned long)index, jmeno[0] - 1);
     }
 
     if (vyraz) {
@@ -149,9 +149,9 @@ static inline void bitset_setbit(bitset_t jmeno, bset_ele index, int vyraz) {
 
 /* získá hodnotu zadaného bitu, vrací hodnotu 0 nebo 1 */
 static inline bset_ele bitset_getbit(bitset_t jmeno, bset_ele index) {
-    if (index > jmeno[0] - 1) {
+    if (index >= jmeno[0]) {
         error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n",
-                   index, jmeno[0]);
+                   index, jmeno[0] - 1);
     }
     return ((jmeno[bity(index) + 1]) >> (index % SULB)) & 1UL;
 }
