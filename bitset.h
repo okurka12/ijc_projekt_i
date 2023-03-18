@@ -7,7 +7,7 @@
 **  2023-02-24  **
 **              **
 ** Last edited: **
-**  2023-03-17  **
+**  2023-03-18  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
@@ -37,7 +37,7 @@ typedef bset_ele *bitset_t;
 
 
 /* Velikost unsigned longu v bitech */
-#define SULB sizeof(unsigned long) * 8
+#define SULB (sizeof(unsigned long) * 8)
 
 
 /* definuje a nuluje proměnnou jmeno_pole */
