@@ -24,13 +24,13 @@ primes-i: primes-i.o eratosthenes.o error.o
 primes.o: primes.h primes.c bitset.h
 	$(CC) $(CFLAGS) -c -o primes.o primes.c
 
-# compile primes.c
+# compile primes.c with inline functions
 primes-i.o: primes.h primes.c bitset.h 
 	$(CC) $(CFLAGS) -c -o primes-i.o -DUSE_INLINE primes.c
 
 # compile eratosthenes.c
-eratosthenes.o: eratosthenes.c bitset.h primes.h.
-	$(CC) $(CFLAGS) -c -o eratosthenes.o eratosthenes.c
+eratosthenes.o: eratosthenes.c bitset.h primes.h
+	$(CC) $(CFLAGS) -lm -c -o eratosthenes.o eratosthenes.c
 
 # compile error.c
 error.o: error.h error.c
@@ -38,6 +38,14 @@ error.o: error.h error.c
 
 clean:
 	rm -f *.o *.elf primes primes-i
+
+.ONESHELL:
+run: primes primes-i
+	ulimit -s 30000
+	echo "Running primes:"
+	./primes
+	echo "Running primes with inline functions:"
+	./primes-i
 
 # jen pro ucely vyvoje
 zkouska: error.o
