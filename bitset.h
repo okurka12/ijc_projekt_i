@@ -88,22 +88,18 @@ typedef bset_ele *bitset_t;
 
 /* získá hodnotu zadaného bitu, vrací hodnotu 0 nebo 1 */
 #define bitset_getbit(jmeno, index) \
-    (index > jmeno[0] - 1) ? \
+    ( \
+    (index >= jmeno[0]) ? \
         ( \
             error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu\n", \
-                       (bset_ele)index, jmeno[0]),  /* operator carka */ \
-            0 \
+                       (bset_ele)index, jmeno[0] - 1),  /* operator carka */ \
+            0LU \
         ) \
     : \
-        (((jmeno[bity(index) + 1]) >> (index % SULB)) & 1UL) 
-    /** 
-     * Haha hadejte co vite jak jsem se tady minule rozciloval jak jsem
-     * hodinu se snazili prijit na OPERATOR CARKA tak on to
-     * dr Peringer za dva tydny uplne vsem zadarmo vyzradil na prednasce :)
-     * 
-     * me to uplne nastvalo ze proc jim radis bro at si na to prijdou sami
-     * jako ja
-     * */
+        (((jmeno[bity(index) + 1]) >> (index % SULB)) & 1UL) \
+    )  // tyto uplne nejvic vnejsi zavorky tady jsou proto aby se pred
+       // cely bitset_getbit dal dat vykricnik protoze to jinak akorat zneguje
+       // podminku ternarniho operatoru coz je veliky headache
 
 #else  // ndef USE_INLINE
 
