@@ -131,7 +131,7 @@ struct ppm *ppm_read(const char *filename) {
 
     int data_byte;
     unsigned int i;
-    for (i = 0; (data_byte = fgetc(f) != EOF); i++) {
+    for (i = 0; (data_byte = fgetc(f)) != EOF; i++) {
         (image_struct->data)[i] = data_byte;
 
         if (i > (image_struct->xsize) * (image_struct->ysize) * 3) {
