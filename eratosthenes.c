@@ -19,7 +19,10 @@
 
 
 void Eratosthenes(bitset_t pole) {
-    const bitset_index_t nula = 0;  // suppres warning: expression always false
+    
+    // suppress warning: "expression always false" when using macros
+    const bitset_index_t nula = 0;
+    
     bitset_setbit(pole, nula, 1);
     bitset_setbit(pole, 1, 1);
     bitset_index_t i = 2;
