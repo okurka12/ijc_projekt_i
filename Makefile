@@ -3,7 +3,7 @@
 # osobni cislo: 251301
 # fakulta: FIT VUT
 # Created:  2022-03-17
-# Modified: 2022-03-18
+# Modified: 2022-03-19
 # vyvijeno s GNU Make 4.3 (Built for x86_64-pc-linux-gnu)
 
 CC=gcc
@@ -14,23 +14,23 @@ all: primes primes-i
 
 # primes (link only)
 primes: primes.o eratosthenes.o error.o
-	$(CC) $(CFLAGS) -o primes primes.o eratosthenes.o error.o 
+	$(CC) $(CFLAGS) -o primes primes.o eratosthenes.o -lm error.o 
 
 # primes-i (link only)
 primes-i: primes-i.o eratosthenes.o error.o
-	$(CC) $(CFLAGS) -o primes-i primes-i.o eratosthenes.o error.o 
+	$(CC) $(CFLAGS) -o primes-i primes-i.o eratosthenes.o -lm error.o 
 
 # compile primes.c
-primes.o: primes.h primes.c bitset.h
+primes.o: eratosthenes.h primes.c bitset.h
 	$(CC) $(CFLAGS) -c -o primes.o primes.c
 
 # compile primes.c with inline functions
-primes-i.o: primes.h primes.c bitset.h 
+primes-i.o: eratosthenes.h primes.c bitset.h 
 	$(CC) $(CFLAGS) -c -o primes-i.o -DUSE_INLINE primes.c
 
 # compile eratosthenes.c
-eratosthenes.o: eratosthenes.c bitset.h primes.h
-	$(CC) $(CFLAGS) -lm -c -o eratosthenes.o eratosthenes.c
+eratosthenes.o: eratosthenes.c bitset.h eratosthenes.h
+	$(CC) $(CFLAGS) -c -o eratosthenes.o eratosthenes.c
 
 # compile error.c
 error.o: error.h error.c

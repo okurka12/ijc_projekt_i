@@ -7,7 +7,7 @@
 **  2023-03-17  **
 **              **
 ** Last edited: **
-**  2023-03-18  **
+**  2023-03-19  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
@@ -15,10 +15,10 @@
 #include <math.h>
 
 #include "bitset.h"
-#include "primes.h"
+#include "eratosthenes.h"
 
 
-void Eratosthenes(bitset_t pole) {
+void Eratosthenes(bitset_t pole, bitset_index_t n) {
     
     // suppress warning: "expression always false" when using macros
     const bitset_index_t nula = 0;
@@ -30,9 +30,9 @@ void Eratosthenes(bitset_t pole) {
     // const bitset_index_t sqrtN = ceil(sqrt(N))  // optimalizace 1
     // while (i <= sqrtN) {
     // while (i <= (bitset_index_t)ceil(sqrt(N))) {  // optimalizace 2
-    while (i <= sqrt(N)) {
+    while (i <= sqrt(n)) {
         // odstranit ze sita nasobky i
-        for (bitset_index_t j = 2 * i; j < N; j += i) {
+        for (bitset_index_t j = 2 * i; j < n; j += i) {
             bitset_setbit(pole, j, 1);
         }
 
@@ -40,7 +40,7 @@ void Eratosthenes(bitset_t pole) {
         i++;
 
         // pokud i + 1 neni prvocislo, pricitat i dokud nebude prvocislo
-        while (bitset_getbit(pole, i) && i <= sqrt(N)) {
+        while (bitset_getbit(pole, i) && i <= sqrt(n)) {
             i++;
         }
     }

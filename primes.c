@@ -7,25 +7,26 @@
 **  2023-03-17  **
 **              **
 ** Last edited: **
-**  2023-03-18  **
+**  2023-03-19  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
 
 #include "bitset.h"
-#include "primes.h"
+#include "eratosthenes.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
 #define LNUM 10  // number of lines to be printed
+#define N 230000000
 
 
 int main() {
     bitset_create(pole, N);
     double start = clock();
-    Eratosthenes(pole);
+    Eratosthenes(pole, N);
     fprintf(stderr, "Time=%.3g\n", (double)(clock()-start)/CLOCKS_PER_SEC);
 
     // pole pro poslednich LNUM prvocisel

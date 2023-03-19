@@ -7,7 +7,7 @@
 **  2023-03-17  **
 **              **
 ** Last edited: **
-**  2023-03-18  **
+**  2023-03-19  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
@@ -16,10 +16,8 @@
 #ifndef _PRIMES_H
 #define _PRIMES_H
 
-#define N 230000000
 
-/* Provede algoritmus na bitovém poli o velikosti N 
-(N definováno v primes.h) */
-void Eratosthenes(bitset_t pole);
+/* Provede algoritmus na bitovém poli o velikosti N */
+void Eratosthenes(bitset_t pole, bitset_index_t n);
 
 #endif  // ndef _PRIMES_H
