@@ -36,15 +36,25 @@ eratosthenes.o: eratosthenes.c bitset.h primes.h
 error.o: error.h error.c
 	$(CC) $(CFLAGS) -c -o error.o error.c
 
+# compile ppm.c
+ppm.o: ppm.c ppm.h error.h
+	$(CC) $(CFLAGS) -c -o ppm.o ppm.c
+
+# compile steg-decode.c
+steg-decode.o: error.h ppm.h
+	$(CC) $(CFLAGS) -c -o steg-decode.o steg-decode.c
+
+# link steg-decode
+steg-decode: steg-decode.o error.o ppm.o
+	$(CC) $(CFLAGS) -o steg-decode steg-decode.o error.o ppm.o
+	
 clean:
 	rm -f *.o *.elf primes primes-i
 
 .ONESHELL:
 run: primes primes-i
 	ulimit -s 30000
-	echo "Running primes:"
 	./primes
-	echo "Running primes with inline functions:"
 	./primes-i
 
 # jen pro ucely vyvoje
