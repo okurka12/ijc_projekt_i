@@ -41,12 +41,16 @@ ppm.o: ppm.c ppm.h error.h
 	$(CC) $(CFLAGS) -c -o ppm.o ppm.c
 
 # compile steg-decode.c
-steg-decode.o: error.h ppm.h eratosthenes.h bitset.h steg-decode.c
+steg-decode.o: error.h ppm.h eratosthenes.h bitset.h steg-decode.c utf8check.h
 	$(CC) $(CFLAGS) -c -o steg-decode.o steg-decode.c
 
+# compile utf8check.c
+utf8check.o:
+	$(CC) $(CFLAGS) -c -o utf8check.o utf8check.c
+
 # link steg-decode
-steg-decode: steg-decode.o error.o ppm.o eratosthenes.o 
-	$(CC) $(CFLAGS) -o steg-decode steg-decode.o error.o ppm.o eratosthenes.o -lm
+steg-decode: steg-decode.o error.o ppm.o eratosthenes.o utf8check.o
+	$(CC) $(CFLAGS) -o steg-decode steg-decode.o error.o ppm.o eratosthenes.o -lm utf8check.o
 	
 clean:
 	rm -f *.o *.elf primes primes-i steg-decode

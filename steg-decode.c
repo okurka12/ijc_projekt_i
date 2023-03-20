@@ -16,9 +16,10 @@
 #include <stdio.h>
 
 #include "bitset.h"        // vytvoření bitového pole pro funkci eratosthenes
-#include "ppm.h"           // načtení ppm souboru do paměti
 #include "eratosthenes.h"  // filtrování prvočísel
 #include "error.h"         // makra na chybová hlášení
+#include "ppm.h"           // načtení ppm souboru do paměti
+#include "utf8check.h"     // funkce utf8_check
 
 #define START_PRIME 101
 #define MSG_BUFFSIZE 10000
@@ -41,7 +42,7 @@ unsigned char bits_to_byte(unsigned char bits[]) {
    bude přetečen buffer, zavolá error_exit. Zprávu nahraje do bufferu. 
    Parametr n je velikost bitového pole prvočísel, buffsize velikost bufferu */
 void read_message(struct ppm *image_struct, bitset_t policko, bitset_index_t n, 
-                  char *message_buffer, unsigned int buffsize) {
+                  unsigned char *message_buffer, unsigned int buffsize) {
 
     // Pole osmi charů, abych každý char byl bit a každých 8 iterací
     // v následujícím for cyklu z těchto bitů poskládal bajt
@@ -110,11 +111,16 @@ int main(int argc, char *argv[]) {
     Eratosthenes(policko, n);
 
     // přečíst zprávu a nahrát ji do bufferu
-    char message_buffer[MSG_BUFFSIZE];
+    unsigned char message_buffer[MSG_BUFFSIZE];
     read_message(image_struct, policko, n, message_buffer, MSG_BUFFSIZE);
+
+    // zkontrolovat zprávu na kódování
+    if (utf8_check(message_buffer) != NULL) {
+        error_exit("Zpráva není správně zakódována kódováním UTF-8.\n");
+    }
     
     // vytisknout zprávu
-    puts(message_buffer);
+    printf("%s\n", message_buffer);
 
     bitset_free(policko);  // uvolnění alokované paměti
     ppm_free(image_struct);
