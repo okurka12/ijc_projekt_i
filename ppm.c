@@ -7,7 +7,7 @@
 **  2023-03-19  **
 **              **
 ** Last edited: **
-**  2023-03-19  **
+**  2023-03-20  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
@@ -21,14 +21,14 @@
 
 /* Otevře soubor a nepodaří-li se, zavolá exit */
 FILE *open_file(const char *filename) {
-    FILE *f = fopen(filename, "r");
+    FILE *f = fopen(filename, "rb");
     if (f == NULL) {
         switch (errno) {
         
         case EACCES:
             warning("Není oprávnění k otevření %s\n", filename);
             break;
-        case EEXIST:
+        case ENOENT:
             warning("Nelze otevřít %s: soubor neexistuje\n", filename);
             break;
         case EINVAL:
@@ -39,7 +39,7 @@ FILE *open_file(const char *filename) {
             warning("Nelze otevřít %s: je adresář\n", filename);
             break;
         default:
-            warning("Nelze otevřít %s\n", filename);
+            warning("Nelze otevřít %s, errno: %d\n", filename, errno);
         }
     }
 
@@ -48,8 +48,8 @@ FILE *open_file(const char *filename) {
 
 
 /* Přečte hlavičku ppm souboru (stream f) a vloží údaje do struct ppm 
-   *image_struct. Při chybě vrací NULL. File stream f je po skončení této 
-   funkce na začátku binárních dat */
+   *image_struct. Při chybě vypíše hlášení a vrací NULL. File stream f je po 
+   skončení této funkce na začátku binárních dat */
 struct ppm *read_header(struct ppm *image_struct, FILE *f) {
     
     char line[MLL];  // line buffer
@@ -87,14 +87,10 @@ struct ppm *read_header(struct ppm *image_struct, FILE *f) {
         return NULL;
     }
     
-    // toto je jedna čtyřnásobná disjunkce, přišlo mi to snazší než psát
-    // 4× spojku OR do podmínky příkazu if
-    failure = 0;
-    failure += image_struct->xsize > MAXSIZE;
-    failure += image_struct->xsize < 1;
-    failure += image_struct->ysize > MAXSIZE;
-    failure += image_struct->ysize < 1;
-    if (failure) {
+    if (image_struct->xsize > MAXSIZE ||
+        image_struct->ysize > MAXSIZE ||
+        image_struct->xsize < 1 ||
+        image_struct->ysize < 1) {
         warning("Obrázek nesprávně velký\n");
         return NULL;
     }
@@ -105,7 +101,10 @@ struct ppm *read_header(struct ppm *image_struct, FILE *f) {
 
 struct ppm *ppm_read(const char *filename) {
     // otevření souboru
-    FILE *f = open_file(filename);  // already checked for NULL
+    FILE *f = open_file(filename);
+    if (f == NULL) {
+        return NULL;
+    }
 
     // alokace místa pro strukturu
     struct ppm *image_struct = malloc(sizeof(struct ppm));
