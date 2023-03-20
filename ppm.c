@@ -140,6 +140,7 @@ struct ppm *ppm_read(const char *filename) {
             return NULL;
         }
     }
+    fclose(f);
 
     if ((image_struct->xsize) * (image_struct->ysize) > i) {
         warning("Soubor má méně bajtů než by měl mít podle dat v hlavičce.\n");
@@ -148,4 +149,9 @@ struct ppm *ppm_read(const char *filename) {
 
     return image_struct;
 
+}
+
+void ppm_free(struct ppm *image_struct) {
+    free(image_struct->data);
+    free(image_struct);
 }
