@@ -3,7 +3,7 @@
 # osobni cislo: 251301
 # fakulta: FIT VUT
 # Created:  2022-03-17
-# Modified: 2022-03-19
+# Modified: 2022-03-20
 # vyvijeno s GNU Make 4.3 (Built for x86_64-pc-linux-gnu)
 
 CC=gcc
@@ -41,15 +41,15 @@ ppm.o: ppm.c ppm.h error.h
 	$(CC) $(CFLAGS) -c -o ppm.o ppm.c
 
 # compile steg-decode.c
-steg-decode.o: error.h ppm.h
+steg-decode.o: error.h ppm.h eratosthenes.h bitset.h steg-decode.c
 	$(CC) $(CFLAGS) -c -o steg-decode.o steg-decode.c
 
 # link steg-decode
-steg-decode: steg-decode.o error.o ppm.o
-	$(CC) $(CFLAGS) -o steg-decode steg-decode.o error.o ppm.o
+steg-decode: steg-decode.o error.o ppm.o eratosthenes.o 
+	$(CC) $(CFLAGS) -o steg-decode steg-decode.o error.o ppm.o eratosthenes.o -lm
 	
 clean:
-	rm -f *.o *.elf primes primes-i
+	rm -f *.o *.elf primes primes-i steg-decode
 
 .ONESHELL:
 run: primes primes-i
