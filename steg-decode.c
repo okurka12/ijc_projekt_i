@@ -22,7 +22,7 @@
 #include "utf8check.h"     // funkce utf8_check
 
 #define START_PRIME 101
-#define MSG_BUFFSIZE 10000
+#define MSG_BUFFSIZE 2048
 
 
 
