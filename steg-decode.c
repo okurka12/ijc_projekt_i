@@ -21,6 +21,7 @@
 #include "error.h"         // makra na chybová hlášení
 
 #define START_PRIME 101
+#define MSG_BUFFSIZE 10000
 
 
 
@@ -33,6 +34,58 @@ unsigned char bits_to_byte(unsigned char bits[]) {
         bits[i] = 0;
     }
     return output;
+}
+
+
+/* Přečte bity dané prvočísly zadaným způsobem. Když zpráva nekončí '\0' nebo 
+   bude přetečen buffer, zavolá error_exit. Zprávu nahraje do bufferu. 
+   Parametr n je velikost bitového pole prvočísel, buffsize velikost bufferu */
+void read_message(struct ppm *image_struct, bitset_t policko, bitset_index_t n, 
+                  char *message_buffer, unsigned int buffsize) {
+
+    // Pole osmi charů, abych každý char byl bit a každých 8 iterací
+    // v následujícím for cyklu z těchto bitů poskládal bajt
+    unsigned char bits[CHAR_BIT] = {0};
+    bitset_index_t bitcount = 0;
+    bitset_index_t bytecount = 0;
+    
+    unsigned char c;
+    bitset_index_t i;
+    for (i = START_PRIME; i < n; i++) {
+
+        // pokud i NENÍ prvočíslo, kéd pod příkazem if NEPROBĚHNE
+        if (bitset_getbit(policko, i)) { 
+            continue;
+        }
+
+        // ------- následující kód proběhne jen když i je prvočíslo -------
+
+        // uloží LSb (LSb z i-tého bajtu obrázku)
+        bits[bitcount % CHAR_BIT] = 
+        (unsigned char)(image_struct->data)[i] % 2;
+
+        bitcount++;  // zvětšení indexu v poli osmi bitů
+
+        // každých 8 iterací poskládání jednoho bajtu
+        if (bitcount % 8 == 0) {
+            c = bits_to_byte(bits);
+            message_buffer[bytecount] = c;
+            bytecount++;  // zvětšení indexu v bufferu
+            if (bytecount == buffsize) {
+                error_exit("Zpráva se nevlezla do bufferu o velikosti %u. "
+                "Velikost bufferu je možné změnit změnou makra MSG_BUFFSIZE " 
+                "ve zdrojovém souboru " __FILE__ ".\n", buffsize);
+            }
+            if (c == '\0') {
+                break;  // break at '\0'
+            }
+        }
+    }
+
+    if (i == n - 1) {
+        error_exit("Zpráva není ukončena \\0 bytem.\n");
+    }
+
 }
 
 
@@ -53,49 +106,17 @@ int main(int argc, char *argv[]) {
     bitset_index_t n = (image_struct->xsize) * (image_struct->ysize) * 3;
     bitset_alloc(policko, n);
 
-    // nastavíme v poli prvočísla
+    // nastavit v poli prvočísla (eratostenovo síto)
     Eratosthenes(policko, n);
+
+    // přečíst zprávu a nahrát ji do bufferu
+    char message_buffer[MSG_BUFFSIZE];
+    read_message(image_struct, policko, n, message_buffer, MSG_BUFFSIZE);
     
-    // Pole osmi charů, abych každý char byl bit a každých 8 iterací
-    // v následujícím for cyklu z těchto bitů poskládal bajt
-    unsigned char bits[CHAR_BIT] = {0};
-    bitset_index_t bitcount = 0;
-    
-    unsigned char c;
-    bitset_index_t i;
-    for (i = START_PRIME; i < n; i++) {
+    // vytisknout zprávu
+    puts(message_buffer);
 
-        // pokud i NENI prvocislo, tak kod pod ifem NEPROBEHNE
-        if (bitset_getbit(policko, i)) { 
-            continue;
-        }
-
-        // ------- nasledujici kod probehne jen kdyz i je prvocislo -------
-
-        // ulozi LSb (LSb z i-teho bajtu obrazku)
-        bits[bitcount % CHAR_BIT] = 
-        (unsigned char)(image_struct->data)[i] % 2;
-
-        // zvetseni indexu
-        bitcount++;
-
-        // každých 8 iterací poskládání jednoho bajtu
-        if (bitcount % 8 == 0) {
-            c = bits_to_byte(bits);
-            putchar(c);
-            if (c == '\0') {
-                break;  // break at '\0'
-            }
-        }
-    }
-
-    if (i == n - 1) {
-        error_exit("Zpráva není ukončena \\0 bytem.\n");
-    }
-
-    putchar('\n');  // newline nakonec
-
-    bitset_free(policko);  // uvolneni alokovane pameti
+    bitset_free(policko);  // uvolnění alokované paměti
     ppm_free(image_struct);
 
     return 0;

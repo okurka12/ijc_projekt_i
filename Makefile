@@ -10,7 +10,7 @@ CC=gcc
 CFLAGS=-m32 -O0 -std=c11 -Wall -Wextra -pedantic -g
 #CFLAGS=-std=c11 -Wall -Wextra -pedantic -g
 
-all: primes primes-i
+all: primes primes-i steg-decode
 
 # primes (link only)
 primes: primes.o eratosthenes.o error.o
