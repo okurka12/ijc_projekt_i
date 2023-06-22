@@ -1,7 +1,8 @@
 # ijc_projekt_i
 First project (homework) for the IJC (The C language) course at FIT BUT. I did as best as I knew how and in the end I am happy with how I did it.
+- The course took place in the summer semester of 2022/2023
 
-Contents:
+## Contents:
 - project assignment `zadani.txt` (It's in czech, obviously)
 - macros and inline functions for bit vectors in `bitset.h` 
    - to use inline functions, the project is compiled with `-DUSE_INLINE`
