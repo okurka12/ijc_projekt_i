@@ -19,14 +19,14 @@
 
 
 void Eratosthenes(bitset_t pole, bitset_index_t n) {
-    
+
     // suppress warning: "expression always false" when using macros
     const bitset_index_t nula = 0;
-    
+
     bitset_setbit(pole, nula, 1);
     bitset_setbit(pole, 1, 1);
     bitset_index_t i = 2;
-    
+
     // const bitset_index_t sqrtN = ceil(sqrt(N))  // optimalizace 1
     // while (i <= sqrtN) {
     // while (i <= (bitset_index_t)ceil(sqrt(N))) {  // optimalizace 2

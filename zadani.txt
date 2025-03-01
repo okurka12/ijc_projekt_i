@@ -11,7 +11,7 @@ Termín odevzdání:  21.3.2023
 
 Příklady: (budou opravovány v prostředí Linux/GCC,
            LC_ALL=cs_CZ.utf8
-           překlad: gcc -g -std=c11 -pedantic -Wall -Wextra 
+           překlad: gcc -g -std=c11 -pedantic -Wall -Wextra
            C11 je potřeba jen pro static_assert(test,"zprava"); )
 
 A) V rozhraní "bitset.h" definujte pro datovou strukturu typu pole bitů:

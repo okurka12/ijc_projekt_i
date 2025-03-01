@@ -14,18 +14,18 @@ all: primes primes-i steg-decode
 
 # primes (link only)
 primes: primes.o eratosthenes.o error.o
-	$(CC) $(CFLAGS) -o primes primes.o eratosthenes.o -lm error.o 
+	$(CC) $(CFLAGS) -o primes primes.o eratosthenes.o -lm error.o
 
 # primes-i (link only)
 primes-i: primes-i.o eratosthenes.o error.o
-	$(CC) $(CFLAGS) -o primes-i primes-i.o eratosthenes.o -lm error.o 
+	$(CC) $(CFLAGS) -o primes-i primes-i.o eratosthenes.o -lm error.o
 
 # compile primes.c
 primes.o: eratosthenes.h primes.c bitset.h
 	$(CC) $(CFLAGS) -c -o primes.o primes.c
 
 # compile primes.c with inline functions
-primes-i.o: eratosthenes.h primes.c bitset.h 
+primes-i.o: eratosthenes.h primes.c bitset.h
 	$(CC) $(CFLAGS) -c -o primes-i.o -DUSE_INLINE primes.c
 
 # compile eratosthenes.c
@@ -51,7 +51,7 @@ utf8check.o:
 # link steg-decode
 steg-decode: steg-decode.o error.o ppm.o eratosthenes.o utf8check.o
 	$(CC) $(CFLAGS) -o steg-decode steg-decode.o error.o ppm.o eratosthenes.o -lm utf8check.o
-	
+
 clean:
 	rm -f *.o *.elf primes primes-i steg-decode
 

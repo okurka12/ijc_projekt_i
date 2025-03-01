@@ -24,7 +24,7 @@ FILE *open_file(const char *filename) {
     FILE *f = fopen(filename, "rb");
     if (f == NULL) {
         switch (errno) {
-        
+
         case EACCES:
             warning("Není oprávnění k otevření %s\n", filename);
             break;
@@ -32,7 +32,7 @@ FILE *open_file(const char *filename) {
             warning("Nelze otevřít %s: soubor neexistuje\n", filename);
             break;
         case EINVAL:
-            warning("Nelze otevřít %s: název obsahuje neplatné znaky\n", 
+            warning("Nelze otevřít %s: název obsahuje neplatné znaky\n",
                     filename);
             break;
         case EISDIR:
@@ -47,11 +47,11 @@ FILE *open_file(const char *filename) {
 }
 
 
-/* Přečte hlavičku ppm souboru (stream f) a vloží údaje do struct ppm 
-   *image_struct. Při chybě vypíše hlášení a vrací NULL. File stream f je po 
+/* Přečte hlavičku ppm souboru (stream f) a vloží údaje do struct ppm
+   *image_struct. Při chybě vypíše hlášení a vrací NULL. File stream f je po
    skončení této funkce na začátku binárních dat */
 struct ppm *read_header(struct ppm *image_struct, FILE *f) {
-    
+
     char line[MLL];  // line buffer
     char failure = 0;  // příznak chyby v hlavičce
 
@@ -68,7 +68,7 @@ struct ppm *read_header(struct ppm *image_struct, FILE *f) {
         }
 
         // pokud na druhém řádku nejsou dvě čísla
-        if (i == 1 && (sscanf(line, "%u %u", &(image_struct->xsize), 
+        if (i == 1 && (sscanf(line, "%u %u", &(image_struct->xsize),
                               &(image_struct->ysize)) != 2)) {
             failure = 1;
             break;
@@ -86,7 +86,7 @@ struct ppm *read_header(struct ppm *image_struct, FILE *f) {
                 "(např. komentáře nebo zvláštní odřádkování).\n");
         return NULL;
     }
-    
+
     if (image_struct->xsize > MAXSIZE ||
         image_struct->ysize > MAXSIZE ||
         image_struct->xsize < 1 ||
@@ -94,7 +94,7 @@ struct ppm *read_header(struct ppm *image_struct, FILE *f) {
         warning("Obrázek nesprávně velký\n");
         return NULL;
     }
-    
+
     return image_struct;
 }
 
@@ -118,7 +118,7 @@ struct ppm *ppm_read(const char *filename) {
         return NULL;
     }
 
-    image_struct->data = malloc((image_struct->xsize) * 
+    image_struct->data = malloc((image_struct->xsize) *
                                 (image_struct->ysize) *
                                 3 *
                                 sizeof(char));

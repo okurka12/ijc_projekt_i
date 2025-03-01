@@ -26,7 +26,7 @@
 
 
 
-/* převede pole 8 charů, které reprezentují bity (0 nebo 1) na jeden char 
+/* převede pole 8 charů, které reprezentují bity (0 nebo 1) na jeden char
    a zároveň vynuluje ono pole charů, LSb je v tomto poli na indexu 0*/
 unsigned char bits_to_byte(unsigned char bits[]) {
     unsigned char output = 0;
@@ -38,10 +38,10 @@ unsigned char bits_to_byte(unsigned char bits[]) {
 }
 
 
-/* Přečte bity dané prvočísly zadaným způsobem. Když zpráva nekončí '\0' nebo 
-   bude přetečen buffer, zavolá error_exit. Zprávu nahraje do bufferu. 
+/* Přečte bity dané prvočísly zadaným způsobem. Když zpráva nekončí '\0' nebo
+   bude přetečen buffer, zavolá error_exit. Zprávu nahraje do bufferu.
    Parametr n je velikost bitového pole prvočísel, buffsize velikost bufferu */
-void read_message(struct ppm *image_struct, bitset_t policko, bitset_index_t n, 
+void read_message(struct ppm *image_struct, bitset_t policko, bitset_index_t n,
                   unsigned char *message_buffer, unsigned int buffsize) {
 
     // Pole osmi charů, abych každý char byl bit a každých 8 iterací
@@ -49,20 +49,20 @@ void read_message(struct ppm *image_struct, bitset_t policko, bitset_index_t n,
     unsigned char bits[CHAR_BIT] = {0};
     bitset_index_t bitcount = 0;
     bitset_index_t bytecount = 0;
-    
+
     unsigned char c;
     bitset_index_t i;
     for (i = START_PRIME; i < n; i++) {
 
         // pokud i NENÍ prvočíslo, kéd pod příkazem if NEPROBĚHNE
-        if (bitset_getbit(policko, i)) { 
+        if (bitset_getbit(policko, i)) {
             continue;
         }
 
         // ------- následující kód proběhne jen když i je prvočíslo -------
 
         // uloží LSb (LSb z i-tého bajtu obrázku)
-        bits[bitcount % CHAR_BIT] = 
+        bits[bitcount % CHAR_BIT] =
         (unsigned char)(image_struct->data)[i] % 2;
 
         bitcount++;  // zvětšení indexu v poli osmi bitů
@@ -74,7 +74,7 @@ void read_message(struct ppm *image_struct, bitset_t policko, bitset_index_t n,
             bytecount++;  // zvětšení indexu v bufferu
             if (bytecount == buffsize) {
                 error_exit("Zpráva se nevlezla do bufferu o velikosti %u. "
-                "Velikost bufferu je možné změnit změnou makra MSG_BUFFSIZE " 
+                "Velikost bufferu je možné změnit změnou makra MSG_BUFFSIZE "
                 "ve zdrojovém souboru " __FILE__ ".\n", buffsize);
             }
             if (c == '\0') {
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
     if (utf8_check(message_buffer) != NULL) {
         error_exit("Zpráva není správně zakódována kódováním UTF-8.\n");
     }
-    
+
     // vytisknout zprávu
     printf("%s\n", message_buffer);
 

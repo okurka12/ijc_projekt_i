@@ -31,11 +31,11 @@ int main() {
 
     // pole pro poslednich LNUM prvocisel
     bitset_index_t primes[LNUM] = {0};
-    
-    // aby se nemuselo rolovat vsech LNUM polozek v poli, 
+
+    // aby se nemuselo rolovat vsech LNUM polozek v poli,
     // tak bude klouzavy zacatek
     unsigned int idx = 0;
-    
+
     // iterace pres bitove pole aby se naslo poslednich LNUM prvocisel
     for (bitset_index_t i = 0; i < N; i++) {
         if (!bitset_getbit(pole, i)) {  // bit 0 - cislo je prvocislo
